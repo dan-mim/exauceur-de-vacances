@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Exauceur de vacances</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+    <body>
+        <h1>
+            ✨<span class="style_titre">Exauceur de vacances</span>✨
+        </h1>
+
+        <br>
+        <br>
+        <span>Un mail vous sera envoyé (à l'adresse <b>{{recipient_email}}</b>) dans l'heure, <br> vous précisant les meilleurs voyages au depart de <b>{{depart}} vers l'{{arrivee1}} {{arrivee2}}</b> (en moins de <b>{{temps_max}} heures</b>), du <b>{{departure_date}} au {{departure_date}}</b></span>
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <form action="nouvelle" method="post">
+            <input type='submit' value="Nouvelle recherche !" id="bouton">
+        </form>
+
+    </body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Exauceur de vacances</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <!--<script src="https://cdn.jsdelivr.net/pyodide/v0.18.0/full/pyodide.js"></script>  -->
+    </head>
+    <body>
+        <h1>
+            ✨<span class="style_titre">Exauceur de vacances</span>✨
+        </h1>
+        <form action="formulaire" method="post">
+            {% for message in get_flashed_messages() %}
+                 <p>{{ message }}</p>
+             {% endfor %}
+            <div class="adresse_mail">
+                <label for="email" class="question">Entrez votre mail : </label>
+                <br>
+                <input type="email" name="email" class="" placeholder="Ex: projets.dan@gmail.com" value="dan15.will@gmail.com" required="true">
+            </div>
+            <br>
+            <br>
+
+            <div class="dates">
+                <label for="dates" class="question">Entrez vos disponibilités :</label>
+                <br>
+                <span>du</span>
+                <input type="date" name="date1" class="case_date" placeholder="Ex: 06/08/2022" value="2022-06-24" required="true">
+                <span>au</span>
+                <input type="date" name="date2" class="case_date" placeholder="Ex: 12/08/2022" value="2022-06-28" required="true">
+            </div>
+            <br>
+            <br>
+
+            <label class="question">Votre aéroport de départ se trouve à :</label>
+            <div class="au_centre">
+                <div class="liste_aeroports">
+                  <input type="radio" id="Paris" name="Aeroport de depart" value="Paris RER" class='centre' checked>
+                  <label name="Paris">Paris (Orly ou Roissy)</label>
+                  <br>            
+                  <input type="radio" id="Beauvais" name="Aeroport de depart" value="Paris + Beauvais" class='centre'>
+                  <label name="Beauvais" >Paris (Beauvais, Orly ou Roissy)</label>
+                  <br>            
+                  <input type="radio" id="autre_aeroport" name="Aeroport de depart" value="autre aeroport" class='centre'>
+                  <label name="autre aeroport">Autre</label>
+                </div>
+            </div>
+            <div id='show_and_hide' style="display:none">
+            <label>Entrez le code IATA de votre départ</label>
+            <br>
+            <input type="text" name="IATA_depart" class="" placeholder="Ex: IATA Paris = PAR">
+            </div>
+            <br>
+            <br>
+
+            <label class="question">Une destination qui vous plairait, serait plutôt :</label>
+            <div class="au_centre">
+                <div class="liste_aeroports">
+                  <input type="checkbox" id="Europe du sud" name="Region de destination" value="europe du sud" checked>
+                  <label>l'Europe du sud et la méditerranée</label>
+                    <br>
+                  <input type="checkbox" id="Europe du nord" name="Region de destination" value="europe du nord">
+                  <label>L'Europe du Nord</label>
+                </div>
+            </div>
+            <br>
+            <br>
+
+            <label class="question">Temps maximum de trajet :</label>
+            <br>
+            <input type="number" name="temps maximum de trajet" class="case_temps" value="4" required="false">
+            <span>heures</span>
+            <br>
+            <br>
+            <input type="submit" value="Trouver mes destinations" id="bouton">
+        </form>
+        <script type="text/javascript">
+            const box = document.getElementById('show_and_hide');
+            function handleRadioClick() {
+              if (document.getElementById('autre_aeroport').checked) {
+                box.style.display = 'block';
+              } else {
+                box.style.display = 'none';
+              }
+            }
+
+            const radioButtons = document.querySelectorAll('input[name="Aeroport de depart"]');
+            radioButtons.forEach(radio => {
+              radio.addEventListener('click', handleRadioClick);
+            });
+
+        </script>
+    </body>
+</html>

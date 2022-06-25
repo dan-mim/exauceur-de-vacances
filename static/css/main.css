@@ -1,0 +1,65 @@
+body {
+    background-color: AliceBlue;
+    font-family: arial;
+    text-align: center;
+}
+
+.style_titre {
+    font-size: 1.2em;
+    font-family:  Blippo, fantasy;
+    background-color: #7ee6da;
+    background-image: linear-gradient(90deg, #838bf6 , #bb67c5 , #e84a9c);    
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent; 
+    -moz-text-fill-color: transparent;
+}
+
+.liste_aeroports {
+    text-align: left;
+}
+.au_centre{
+     margin: 0 auto;
+     width: 300px;
+}
+
+.question {
+    font-weight: bold;
+}
+
+input{
+    background-color: #e5e7eb;
+    border-color: lightgrey;
+    border-radius: 10px;
+    border: 2px solid white;
+    margin: 1px;
+    padding: 10px 15px;
+    text-align: center;
+}
+
+.case_date{
+    padding: 5px 15px;
+    width: 110px;
+}
+
+.case_temps{
+    padding: 5px 15px;
+    width:30px;
+
+}
+
+#bouton {
+    background-color: #01A88A;
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+    border: 2px solid white;
+    margin: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+#bouton:hover {
+    background-color: darkslategrey;
+}
