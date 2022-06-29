@@ -42,7 +42,7 @@ clyent==1.2.1
 colorama==0.4.4
 colorcet==2.0.6
 comtypes==1.1.10
-conda==4.13.0
+conda==4.3.16
 conda-content-trust==0+unknown
 conda-pack==0.6.0
 conda-package-handling==1.8.1
