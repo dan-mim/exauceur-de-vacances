@@ -55,14 +55,15 @@ Elle prend en entrée:
     peut être modifiée.
 
 """
-def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['europe du sud'], temps_max=4, conv_doll_euros=0.93):
+def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['europe du sud'], temps_max=4):
+    time.sleep(3)
     ## données d'entrées
     #départs:
     l_departure = ['CDG', 'ORY']
     if depart == 'Paris + Beauvais':
         l_departure = ['CDG', 'ORY', 'BVA']
     #arrivées:
-    df_aeroports_arrives_all = pd.read_csv('IATA_mediterranee.txt')[5:9]
+    df_aeroports_arrives_all = pd.read_csv('IATA_mediterranee.txt')[5:7]
     if arrivee == ['europe du nord']:
         df_aeroports_arrives_all = pd.read_csv('IATA_europe_nord.txt')
     if arrivee == ['europe du sud', 'europe du nord']:
@@ -82,6 +83,8 @@ def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['eur
     #nom du fichier resultat:
     name_result = f"Vacances en {arrivee} du {departure_date} au {arrival_date}"
     ## execution des fonctions
+    #trouver la conversion de l'euro au dollard
+    conv_doll_euros = find_conv_doll_euros()
     #scraping des pages kayak
     resultats = execution_scraping(links, aeroports_arrives, departure_date, arrival_date, temps_max)
     print(resultats)
