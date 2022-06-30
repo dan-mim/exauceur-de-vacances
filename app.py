@@ -83,7 +83,6 @@ def find_the_perfect_trip():
 def nouvelle_recherche():
     return render_template("index1.html")
 
-app.run()
 
 
 
