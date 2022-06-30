@@ -113,7 +113,7 @@ rope==0.22.0
 Rtree==0.9.7
 selenium==3.141.0
 setuptools==61.2.0
-sip==4.19.13
+sip>=4.19.13
 six==1.16.0
 snowballstemmer==2.2.0
 sortedcontainers==2.4.0
