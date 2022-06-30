@@ -157,3 +157,5 @@ html2text==2020.1.16
 lxml==4.9.0
 Markdown==3.3.7
 premailer==3.10.0
+et-xmlfile==1.1.0
+openpyxl==3.0.9
