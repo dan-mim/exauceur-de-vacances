@@ -29,16 +29,16 @@ def find_the_perfect_trip():
     if depart == 'autre aeroport':
         depart = request.form['IATA_depart']
     #region de destination
-    arrivee = request.form.getlist('Region de destination')[0]
-    arrivee1 = arrivee
+    arrivee1 = request.form.getlist('Region de destination')[0]
     arrivee2 = ''
+    arrivee = [arrivee1]
     len_arrivee = len(request.form.getlist('Region de destination'))
     if len_arrivee > 1:
         arrivee2 = request.form.getlist('Region de destination')[1]
         arrivee = [arrivee1] + [arrivee2]
         arrivee2 = "et l'"+ arrivee2
     #temps max
-    temps_max = request.form['temps maximum de trajet']
+    temps_max = int(request.form['temps maximum de trajet'])
     #flash:
     # flash(recipient_email)
     # flash(dates)
@@ -52,6 +52,8 @@ def find_the_perfect_trip():
     print('~'*20)
     arguments = {'recipient_email':recipient_email, 'dates':dates,
                                'depart':depart, 'arrivee':arrivee, 'temps_max':temps_max}
+    #app_scraping_kayak(recipient_email, dates, depart, arrivee, temps_max)
+    #app_scraping_kayak(recipient_email, dates, depart, arrivee, temps_max)
     thread = Thread(target=app_scraping_kayak, kwargs=arguments) #Thread(target=find_conv_doll_euros, kwargs={})
     thread.start()
     name_result = f"Vacances en ['{arrivee}'] du {departure_date} au {arrival_date}"
@@ -80,6 +82,10 @@ def find_the_perfect_trip():
 @app.route("/nouvelle", methods=['POST', 'GET'])
 def nouvelle_recherche():
     return render_template("index1.html")
+
+app.run()
+
+
 
 
 

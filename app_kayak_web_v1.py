@@ -203,11 +203,12 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     open_result(browser, url)
     # scraping:
     start=time.time()
-    time.sleep(60*4.5) 
+    time.sleep(60*1) #4.5) 
     """ 
     ce time. sleep est responsable de la stabilité du modèle
     mais aussi de sa rapidité/lenteur 
     """
+    print('-'*20, arrival, ':', browser)
     res = scraping_the_page(browser, departure_date, arrival_date, temps_max)
     end = time.time()
     print('~'*30,'apres le scraping : ',np.round(end-start, 2),'s - ', arrival)
@@ -318,6 +319,13 @@ def find_conv_doll_euros():
 # print("TOTAL TIME : ", round((end - start_time)/60,2), " minutes")
 # #print('tableau résultat : ', len(resultat_1.keys())) 
 # print('*'*80)
+
+
+#send_mail("dan15.will@gmail.com", "2022-07-24", "2022-07-28", r"C:\Users\Daniel.mimouni\Desktop\programme_perso\web_scraping\site_web\01_flask_web_app", "corresp_days")
+
+
+
+
 
 
 
