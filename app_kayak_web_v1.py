@@ -12,8 +12,8 @@ Version v1 : Je me débarasse de tous les bouts de codes inutiles ou commentés 
 
 #%% IMPORTATION des bibliothèques
 from selenium import webdriver
-from webdriver_manager.firefox import GeckoDriverManager #si j'utilise Firefox
-from selenium.webdriver.firefox.options import Options # pour rajouter des options (comme ne pas montrer les fenetres firefox)
+#from webdriver_manager.firefox import GeckoDriverManager #si j'utilise Firefox
+#from selenium.webdriver.firefox.options import Options # pour rajouter des options (comme ne pas montrer les fenetres firefox)
 from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 import numpy as np 
@@ -22,9 +22,6 @@ import time
 from selenium.webdriver.support.wait import WebDriverWait
 #from selenium.webdriver.common.by import By
 from functools import partial 
-############# pour ajuster les prix :
-#############from selenium.webdriver.support import expected_conditions as EC
-#############from selenium.webdriver import ActionChains
 import string
 #pour executer des codes en parallèle
 from concurrent.futures import ThreadPoolExecutor
@@ -199,7 +196,15 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     # mais je ne sais pas pourquoi, du coup les résultats sont faux :(
     # option_browser = webdriver.FirefoxOptions() #Options() #
     # option_browser.add_argument('--headless')
-    browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
+    ### pour avoir Chrome dans Heroku ###
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    #chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    #chrome_options.add_argument("--no-sandbox")
+    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+    ###    ###
+    #browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
     # ouverture de la fenetre:
     open_result(browser, url)
     # scraping:
@@ -293,6 +298,14 @@ def send_mail(recipient_email, departure_date, arrival_date, path, name_result):
     
 #%%
 def find_conv_doll_euros():
+    ### pour Heroku ###
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--no-sandbox")
+    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+    ###    ###
     browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
     url = "https://www.google.com/search?client=firefox-b-d&q=un+dollard+en+euro"
     # ouverture de la fenetre:
