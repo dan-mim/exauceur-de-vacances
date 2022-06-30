@@ -85,6 +85,7 @@ def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['eur
     ## execution des fonctions
     #trouver la conversion de l'euro au dollard
     conv_doll_euros = find_conv_doll_euros()
+    print(conv_doll_euros)
     #scraping des pages kayak
     resultats = execution_scraping(links, aeroports_arrives, departure_date, arrival_date, temps_max)
     print(resultats)
@@ -291,8 +292,9 @@ def send_mail(recipient_email, departure_date, arrival_date, path, name_result):
                     subject=f"[Kayak] Best flight deals on the {dates1}", attachments=attached)
     
 #%%
+from webdriver_manager.chrome import ChromeDriverManager
 def find_conv_doll_euros():
-    browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
+    browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())#, options=option_browser)
     url = "https://www.google.com/search?client=firefox-b-d&q=un+dollard+en+euro"
     # ouverture de la fenetre:
     open_result(browser, url)
