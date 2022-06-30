@@ -306,7 +306,7 @@ def find_conv_doll_euros():
     chrome_options.add_argument("--no-sandbox")
     browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
     ###    ###
-    browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
+    #browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
     url = "https://www.google.com/search?client=firefox-b-d&q=un+dollard+en+euro"
     # ouverture de la fenetre:
     open_result(browser, url)
