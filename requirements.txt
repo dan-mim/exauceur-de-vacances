@@ -148,3 +148,4 @@ wincertstore==0.2
 wrapt==1.12.1
 yapf==0.31.0
 zipp==3.8.0
+gunicorn
