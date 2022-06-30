@@ -321,7 +321,7 @@ def find_conv_doll_euros():
     conversion = browser.find_elements_by_xpath(xp_conversion)
     resultat = conversion[0].text.replace(',', '.')
     conv_doll_euros = float(resultat)
-    #browser.quit()
+    browser.quit()
     return(conv_doll_euros)
     
 #%% Execution
