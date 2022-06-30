@@ -82,7 +82,7 @@ def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['eur
     ## execution des fonctions
     #trouver la conversion de l'euro au dollard
     conv_doll_euros = find_conv_doll_euros()
-    print(conv_doll_euros)
+    print('*'*30, conv_doll_euros)
     #scraping des pages kayak
     resultats = execution_scraping(links, aeroports_arrives, departure_date, arrival_date, temps_max)
     print(resultats)
@@ -302,8 +302,8 @@ def find_conv_doll_euros():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
     chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
     ###    ###
     #browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
@@ -321,7 +321,7 @@ def find_conv_doll_euros():
     conversion = browser.find_elements_by_xpath(xp_conversion)
     resultat = conversion[0].text.replace(',', '.')
     conv_doll_euros = float(resultat)
-    browser.quit()
+    #browser.quit()
     return(conv_doll_euros)
     
 #%% Execution
