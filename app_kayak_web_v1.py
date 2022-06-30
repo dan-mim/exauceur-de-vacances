@@ -292,9 +292,8 @@ def send_mail(recipient_email, departure_date, arrival_date, path, name_result):
                     subject=f"[Kayak] Best flight deals on the {dates1}", attachments=attached)
     
 #%%
-from webdriver_manager.chrome import ChromeDriverManager
 def find_conv_doll_euros():
-    browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())#, options=option_browser)
+    browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
     url = "https://www.google.com/search?client=firefox-b-d&q=un+dollard+en+euro"
     # ouverture de la fenetre:
     open_result(browser, url)
