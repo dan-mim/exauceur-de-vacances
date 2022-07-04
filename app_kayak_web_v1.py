@@ -60,7 +60,7 @@ def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['eur
     if depart == 'Paris + Beauvais':
         l_departure = ['CDG', 'ORY', 'BVA']
     #arrivées:
-    df_aeroports_arrives_all = pd.read_csv('IATA_mediterranee.txt')[5:7]
+    df_aeroports_arrives_all = pd.read_csv('IATA_mediterranee.txt')[5:10]
     if arrivee == ['europe du nord']:
         df_aeroports_arrives_all = pd.read_csv('IATA_europe_nord.txt')
     if arrivee == ['europe du sud', 'europe du nord']:
@@ -213,7 +213,7 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     open_result(browser, url)
     # scraping:
     start=time.time()
-    time.sleep(60*1) #4.5) 
+    time.sleep(60*2) #4.5) 
     """ 
     ce time. sleep est responsable de la stabilité du modèle
     mais aussi de sa rapidité/lenteur 
