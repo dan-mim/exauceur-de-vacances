@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Jun 17 12:02:26 2022
-
 @author: Daniel.mimouni
-
 Je vais créer un programme python qui scrape Kayak pour retrouver les meilleurs prix pour des destinations. 
 J'essaie de construire des fonctions réutilisabes au maximum
 
-Version v1 : Je me débarasse de tous les bouts de codes inutiles ou commentés de la version v0
+Dans cette version : J'essaie d'enlever le threading lors du scraping de plusieurs pages web
+car Heroku a du al avec la memoire vive.
 """
 
 #%% IMPORTATION des bibliothèques
 from selenium import webdriver
 #from webdriver_manager.firefox import GeckoDriverManager #si j'utilise Firefox
 #from selenium.webdriver.firefox.options import Options # pour rajouter des options (comme ne pas montrer les fenetres firefox)
+from webdriver_manager.chrome import ChromeDriverManager #avec Chrome
 from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 import numpy as np 
@@ -38,9 +38,7 @@ import psutil # pour avoir accès à la mémoire vive utilisée
 """
 Cette fonction est la fonction à executer pour obtenir le scraping d'une cinquantaine d'aéroport 
 à des dates choisises.
-
 Le résultat est un mail envoyé à l'usager avec en pièce jointe un excel récapitulant tous les vols possibles.
-
 Elle prend en entrée:
     -le mail du l'utilisateur(str), 
     -les dates(list) de depart et de retour, 
@@ -50,7 +48,6 @@ Elle prend en entrée:
     -le temps max de trajet(float) (réglé sur 4h sauf si précisé)
     -le taux de conversion du dollard à l'euro(float) reglé sur 0.93 (juin 2022) mais
     peut être modifiée.
-
 """
 def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['europe du sud'], temps_max=4):
     time.sleep(3)
@@ -60,7 +57,7 @@ def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['eur
     if depart == 'Paris + Beauvais':
         l_departure = ['CDG', 'ORY', 'BVA']
     #arrivées:
-    df_aeroports_arrives_all = pd.read_csv('IATA_mediterranee.txt')[5:10]
+    df_aeroports_arrives_all = pd.read_csv('IATA_mediterranee.txt')[10:20]
     if arrivee == ['europe du nord']:
         df_aeroports_arrives_all = pd.read_csv('IATA_europe_nord.txt')
     if arrivee == ['europe du sud', 'europe du nord']:
@@ -152,36 +149,43 @@ def supprimer_vol_long(a, temps_max):
 
 #%% SCRAPING DE LA PAGE
 def scraping_the_page(browser, departure_date, arrival_date, temps_max):
-    try:
-        # horaires
-        xp_schedules = '//div[@class="section times"]' 
-        schedules = browser.find_elements_by_xpath(xp_schedules)
-        hours_a = [schedule.text.split()[0]+schedule.text.split()[1] for schedule in schedules]
-        hours_b = [schedule.text.split()[3]+schedule.text.split()[4] for schedule in schedules]
-        nb_flights = int(len(hours_a)/2)
-        aller_retour = [departure_date, arrival_date] * nb_flights
-        tab_flights = pd.DataFrame({'date' : aller_retour, 'taking off' : hours_a, 'landing' : hours_b})
-        
-        # durées de vol
-        xp_duration = '//div[@class="section duration allow-multi-modal-icons"]' #/div[@class="top"]/span[@class="time-pair"]'
-        duration0 = browser.find_elements_by_xpath(xp_duration)
-        duration = [dur.text.split()[0]+dur.text.split()[1] for dur in duration0]
-        tab_flights['duration'] = duration
-        
-        # prix de l'aller retour
-        xp_prices = '//a[contains(@class,"booking-link")]/span[@class="price option-text"]/span[@class="price-text"]'
-        prices = browser.find_elements_by_xpath(xp_prices)
-        prices_list = [price.text.replace('$','').replace(',','') for price in prices if price.text != '']
-        prices_list = list(map(int, prices_list))
-        tab_prices = pd.DataFrame({'flights' : [i for i in range(nb_flights)], 'prices_dollard' : prices_list})
-        # 1 trajet = 1 aler retour
-        flights = sum(([i,i] for i in range(nb_flights)),[])
-        tab_flights['flights'] = flights
-        # Je rajoute le prix de l'aller retour au tableau de base
-        tab_flights = tab_flights.merge(tab_prices, left_on='flights', right_on='flights')
-        tab_flights = supprimer_vol_long(tab_flights, temps_max).reset_index()
-    except:
-        tab_flights = pd.DataFrame()
+   # try:
+    # horaires
+    xp_schedules = '//div[@class="section times"]' 
+    ## webdriver waits for the schedules to be loaded  ##
+    st = time.time()
+    time.sleep(60)
+    end = time.time()
+    print('WebDriverWait for : ', '_'*20, np.round(st-end, 2))
+    ##    ##
+    
+    schedules = browser.find_elements_by_xpath(xp_schedules)
+    hours_a = [schedule.text.split()[0]+schedule.text.split()[1] for schedule in schedules if len(schedule.text.split())>2]
+    hours_b = [schedule.text.split()[3]+schedule.text.split()[4] for schedule in schedules if len(schedule.text.split())>2]
+    nb_flights = int(len(hours_a)/2)
+    aller_retour = [departure_date, arrival_date] * nb_flights
+    tab_flights = pd.DataFrame({'date' : aller_retour, 'taking off' : hours_a, 'landing' : hours_b})
+    
+    # durées de vol
+    xp_duration = '//div[@class="section duration allow-multi-modal-icons"]' #/div[@class="top"]/span[@class="time-pair"]'
+    duration0 = browser.find_elements_by_xpath(xp_duration)
+    duration = [dur.text.split()[0]+dur.text.split()[1] for dur in duration0 if len(dur.text.split())>2]
+    tab_flights['duration'] = duration
+    
+    # prix de l'aller retour
+    xp_prices = '//a[contains(@class,"booking-link")]/span[@class="price option-text"]/span[@class="price-text"]'
+    prices = browser.find_elements_by_xpath(xp_prices)
+    prices_list = [price.text.replace('$','').replace(',','') for price in prices if price.text != '']
+    prices_list = list(map(int, prices_list))
+    tab_prices = pd.DataFrame({'flights' : [i for i in range(nb_flights)], 'prices_dollard' : prices_list})
+    # 1 trajet = 1 aller retour
+    flights = sum(([i,i] for i in range(nb_flights)),[])
+    tab_flights['flights'] = flights
+    # Je rajoute le prix de l'aller retour au tableau de base
+    tab_flights = tab_flights.merge(tab_prices, left_on='flights', right_on='flights')
+    tab_flights = supprimer_vol_long(tab_flights, temps_max).reset_index()
+    # except:
+    #     tab_flights = pd.DataFrame()
     # résultat
     return(tab_flights)
 
@@ -191,11 +195,11 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     un seul url, un tableau de résultat à remplir, une seule arrivée (arrival)
     un dico de driver qu'on va remplir
     """
-    # curseur:
-    # En activant ces options les fenetres Firefox ne s'affichent pas
-    # mais je ne sais pas pourquoi, du coup les résultats sont faux :(
-    # option_browser = webdriver.FirefoxOptions() #Options() #
-    # option_browser.add_argument('--headless')
+			  
+																	 
+																	   
+															  
+											   
     ### pour avoir Chrome dans Heroku ###
     chrome_options = webdriver.ChromeOptions()
     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
@@ -208,12 +212,12 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     chrome_options.add_argument("--disable-dev-shm-usage")
     browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
     ###    ###
-    #browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())#, options=option_browser)
+																										  
     # ouverture de la fenetre:
     open_result(browser, url)
     # scraping:
     start=time.time()
-    time.sleep(60*2) #4.5) 
+    #time.sleep(60*0.5) #4.5) 
     """ 
     ce time. sleep est responsable de la stabilité du modèle
     mais aussi de sa rapidité/lenteur 
@@ -224,6 +228,7 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     print('~'*30,'apres le scraping : ',np.round(end-start, 2),'s - ', arrival)
     res['arrival'] = arrival
     print('*'*20, ': ', arrival, '-- le tab de res est vide ?', res.empty)
+    browser.close()
     browser.quit()
     return(res)
 
@@ -237,16 +242,27 @@ def make_links(l_departure, aeroports_arrives, departure_date, arrival_date):
 
 #%% EXECUTION AVEC CONCURRENT FUTURES
 def execution_scraping(links, aeroports_arrives, departure_date, arrival_date, temps_max):
-    n = len(links)
-    with ThreadPoolExecutor() as executor:
-        # submit tasks and process results
-        resu = {}
-        i = 0
-        for res in executor.map(scraping_kayak, links, aeroports_arrives, [departure_date]*n, [arrival_date]*n, [temps_max]*n):
-            arrival = aeroports_arrives[i]
-            resu[arrival] = res
-            i = i + 1
+    ### sans threading ###
+    resu = {}
+    for i,url in enumerate(links):
+        arrival = aeroports_arrives[i]
+			 
+        res = scraping_kayak(url, arrival, departure_date, arrival_date, temps_max)
+										  
+        resu[arrival] = res
+					 
     return(resu)
+    ### avec threading ###
+    # n = len(links)
+    # with ThreadPoolExecutor() as executor:
+    #     # submit tasks and process results
+    #     resu = {}
+    #     i = 0
+    #     for res in executor.map(scraping_kayak, links, aeroports_arrives, [departure_date]*n, [arrival_date]*n, [temps_max]*n):
+    #         arrival = aeroports_arrives[i]
+    #         resu[arrival] = res
+    #         i = i + 1
+    # return(resu)
 
 #%% MISE EN FORME DU TABLEAU DE RESULTATS
 def mise_en_excel(name_result, aeroports_arrives, links, resultats, conv_doll_euros, corresp_IATA_complete):
@@ -329,9 +345,12 @@ def find_conv_doll_euros():
     return(conv_doll_euros)
     
 #%% Execution
+# recipient_email = 'dan15.will@gmail.fr'
+# dates = ['2022-08-15', '2022-08-23']
+
 
 # start_time = time.time()
-# app_scraping_kayak(recipient_email, dates, depart)
+# app_scraping_kayak(recipient_email, dates)
 # end = time.time()
 # print('*'*80)
 # print("TOTAL TIME : ", round((end - start_time)/60,2), " minutes")
@@ -340,20 +359,6 @@ def find_conv_doll_euros():
 
 
 #send_mail("dan15.will@gmail.com", "2022-07-24", "2022-07-28", r"C:\Users\Daniel.mimouni\Desktop\programme_perso\web_scraping\site_web\01_flask_web_app", "corresp_days")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
