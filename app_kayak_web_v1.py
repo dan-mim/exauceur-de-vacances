@@ -224,6 +224,7 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     print('~'*30,'apres le scraping : ',np.round(end-start, 2),'s - ', arrival)
     res['arrival'] = arrival
     print('*'*20, ': ', arrival, '-- le tab de res est vide ?', res.empty)
+    browser.close()
     browser.quit()
     return(res)
 
