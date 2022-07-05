@@ -309,7 +309,7 @@ def send_mail(recipient_email, departure_date, arrival_date, path, name_result):
     
     # Creating the email body
     message = template.format(dates=dates1)
-    attached = path+f"\{name_result}.xlsx"
+    attached = f"{name_result}.xlsx" # path+f"\{name_result}.xlsx"
     
     # Sending the email
     with Gmail(email_address, password) as email:
