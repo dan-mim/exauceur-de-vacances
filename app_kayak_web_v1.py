@@ -57,7 +57,7 @@ def app_scraping_kayak(recipient_email, dates, depart='Paris RER', arrivee=['eur
     if depart == 'Paris + Beauvais':
         l_departure = ['CDG', 'ORY', 'BVA']
     #arrivées:
-    df_aeroports_arrives_all = pd.read_csv('IATA_mediterranee.txt')[19:20]
+    df_aeroports_arrives_all = pd.read_csv('IATA_mediterranee.txt')[18:19]
     if arrivee == ['europe du nord']:
         df_aeroports_arrives_all = pd.read_csv('IATA_europe_nord.txt')
     if arrivee == ['europe du sud', 'europe du nord']:
