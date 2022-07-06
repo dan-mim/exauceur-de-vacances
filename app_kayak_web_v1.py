@@ -148,44 +148,53 @@ def supprimer_vol_long(a, temps_max):
 
 #%% SCRAPING DE LA PAGE
 def scraping_the_page(browser, departure_date, arrival_date, temps_max):
-   # try:
-    # horaires
-    xp_schedules = '//div[@class="section times"]' 
-    ## webdriver waits for the schedules to be loaded  ##
+    def go_scraping(browser, departure_date, arrival_date, temps_max):
+        xp_schedules = '//div[@class="section times"]' 
+        schedules = browser.find_elements_by_xpath(xp_schedules)
+        hours_a = [schedule.text.split()[0]+schedule.text.split()[1] for schedule in schedules if len(schedule.text.split())>2]
+        hours_b = [schedule.text.split()[3]+schedule.text.split()[4] for schedule in schedules if len(schedule.text.split())>2]
+        nb_flights = int(len(hours_a)/2)
+        aller_retour = [departure_date, arrival_date] * nb_flights
+        tab_flights = pd.DataFrame({'date' : aller_retour, 'taking off' : hours_a, 'landing' : hours_b})
+        
+        # durées de vol
+        xp_duration = '//div[@class="section duration allow-multi-modal-icons"]' #/div[@class="top"]/span[@class="time-pair"]'
+        duration0 = browser.find_elements_by_xpath(xp_duration)
+        duration = [dur.text.split()[0]+dur.text.split()[1] for dur in duration0 if len(dur.text.split())>2]
+        tab_flights['duration'] = duration
+        
+        # prix de l'aller retour
+        xp_prices = '//a[contains(@class,"booking-link")]/span[@class="price option-text"]/span[@class="price-text"]'
+        prices = browser.find_elements_by_xpath(xp_prices)
+        prices_list = [price.text.replace('$','').replace(',','') for price in prices if price.text != '']
+        prices_list = list(map(int, prices_list))
+        tab_prices = pd.DataFrame({'flights' : [i for i in range(nb_flights)], 'prices_dollard' : prices_list})
+        # 1 trajet = 1 aller retour
+        flights = sum(([i,i] for i in range(nb_flights)),[])
+        tab_flights['flights'] = flights
+        # Je rajoute le prix de l'aller retour au tableau de base
+        tab_flights = tab_flights.merge(tab_prices, left_on='flights', right_on='flights')
+        tab_flights = supprimer_vol_long(tab_flights, temps_max).reset_index()
+        return(tab_flights)
     st = time.time()
-    time.sleep(60)
+    time.sleep(35)
     end = time.time()
     print('WebDriverWait for : ', '_'*20, np.round(st-end, 2))
-    ##    ##
-    
-    schedules = browser.find_elements_by_xpath(xp_schedules)
-    hours_a = [schedule.text.split()[0]+schedule.text.split()[1] for schedule in schedules if len(schedule.text.split())>2]
-    hours_b = [schedule.text.split()[3]+schedule.text.split()[4] for schedule in schedules if len(schedule.text.split())>2]
-    nb_flights = int(len(hours_a)/2)
-    aller_retour = [departure_date, arrival_date] * nb_flights
-    tab_flights = pd.DataFrame({'date' : aller_retour, 'taking off' : hours_a, 'landing' : hours_b})
-    
-    # durées de vol
-    xp_duration = '//div[@class="section duration allow-multi-modal-icons"]' #/div[@class="top"]/span[@class="time-pair"]'
-    duration0 = browser.find_elements_by_xpath(xp_duration)
-    duration = [dur.text.split()[0]+dur.text.split()[1] for dur in duration0 if len(dur.text.split())>2]
-    tab_flights['duration'] = duration
-    
-    # prix de l'aller retour
-    xp_prices = '//a[contains(@class,"booking-link")]/span[@class="price option-text"]/span[@class="price-text"]'
-    prices = browser.find_elements_by_xpath(xp_prices)
-    prices_list = [price.text.replace('$','').replace(',','') for price in prices if price.text != '']
-    prices_list = list(map(int, prices_list))
-    tab_prices = pd.DataFrame({'flights' : [i for i in range(nb_flights)], 'prices_dollard' : prices_list})
-    # 1 trajet = 1 aller retour
-    flights = sum(([i,i] for i in range(nb_flights)),[])
-    tab_flights['flights'] = flights
-    # Je rajoute le prix de l'aller retour au tableau de base
-    tab_flights = tab_flights.merge(tab_prices, left_on='flights', right_on='flights')
-    tab_flights = supprimer_vol_long(tab_flights, temps_max).reset_index()
-    # except:
-    #     tab_flights = pd.DataFrame()
-    # résultat
+    try:
+        tab_flights = go_scraping(browser, departure_date, arrival_date, temps_max)
+    except:
+        rep = 0
+        print('#'*20 , 'not ok at first')
+        while rep < 5:
+            print('#'*20 , rep)
+            try:
+                time.sleep(10)
+                tab_flights = go_scraping(browser, departure_date, arrival_date, temps_max)
+                break
+            except:
+                rep = rep + 1
+        if rep == 4:
+            tab_flights = pd.DataFrame()
     return(tab_flights)
 
 #%% METHODE 1 : OUVERTURE ET TRAITEMENT FENETRE PAR FENETRE
@@ -193,12 +202,7 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     """
     un seul url, un tableau de résultat à remplir, une seule arrivée (arrival)
     un dico de driver qu'on va remplir
-    """
-			  
-																	 
-																	   
-															  
-											   
+    """							   
     ### pour avoir Chrome dans Heroku ###
     chrome_options = webdriver.ChromeOptions()
     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
