@@ -203,7 +203,7 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     chrome_options.add_argument(f'user-agent={user_agent}')
     ##     ##
     chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")uses
+    chrome_options.add_argument("--disable-dev-shm-usage")
     browser = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
     ###    ###
     # ouverture de la fenetre:
