@@ -186,7 +186,7 @@ def scraping_the_page(browser, departure_date, arrival_date, temps_max):
     except:
         rep = 0
         print('#'*20 , 'not ok at first')
-        while rep < 5:
+        while rep < 3:
             print('#'*20 , rep)
             try:
                 time.sleep(10)
@@ -194,7 +194,7 @@ def scraping_the_page(browser, departure_date, arrival_date, temps_max):
                 break
             except:
                 rep = rep + 1
-        if rep == 4:
+        if rep == 3:
             tab_flights = pd.DataFrame()
     return(tab_flights)
 
