@@ -7,3 +7,6 @@ app_kayak_web_v1.py can be deployed on Heroku because it uses GOOGLE_CHROME_BIN 
 while app_kayak_web_v2_Chrome_theading.py only works on a local computer.
 Edit : app_kayak_web_v1.py and more generally this whole Chrome-driver branch cannot be deployed because the method uses too much RAM.
 Refer to the branch Chrome-driver-no-threading for deployement.
+
+
+I used http://kaffeine.herokuapp.com/ to prevent my website from idling (the heroku dynos from idling).
