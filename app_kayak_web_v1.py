@@ -346,16 +346,16 @@ def find_conv_doll_euros():
     try: 
     	conversion = browser.find_elements_by_xpath(xp_conversion)
     except:
-	y = 1
+        y = 1
     if y == 1:
-	time.sleep(5)
-	conversion = browser.find_elements_by_xpath(xp_conversion)
+        time.sleep(5)
+        conversion = browser.find_elements_by_xpath(xp_conversion)
     try:
-    	resultat = conversion[0].text.replace(',', '.')
-    	conv_doll_euros = float(resultat)
+        resultat = conversion[0].text.replace(',', '.')
+        conv_doll_euros = float(resultat)
     except:
-	conv_doll_euros = 0.95
-	print('conversion à 0.95 inséré en dur')
+        conv_doll_euros = 0.95
+        print('conversion à 0.95 inséré en dur')
     browser.close()
     browser.quit()
     return(conv_doll_euros)
