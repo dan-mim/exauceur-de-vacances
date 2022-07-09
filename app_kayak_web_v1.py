@@ -203,12 +203,7 @@ def scraping_kayak(url, arrival, departure_date, arrival_date, temps_max):
     """
     un seul url, un tableau de résultat à remplir, une seule arrivée (arrival)
     un dico de driver qu'on va remplir
-    """
-			  
-																	 
-																	   
-															  
-											   
+    """								   
     ### pour avoir Chrome dans Heroku ###
     chrome_options = webdriver.ChromeOptions()
     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
@@ -347,9 +342,21 @@ def find_conv_doll_euros():
        pass
     #récuperation du taux de conversion
     xp_conversion = '//span[@data-precision="2"]' 
-    conversion = browser.find_elements_by_xpath(xp_conversion)
-    resultat = conversion[0].text.replace(',', '.')
-    conv_doll_euros = float(resultat)
+    y = 0
+    try: 
+    	conversion = browser.find_elements_by_xpath(xp_conversion)
+    except:
+	y = 1
+    if y == 1:
+	time.sleep(5)
+	conversion = browser.find_elements_by_xpath(xp_conversion)
+    try:
+    	resultat = conversion[0].text.replace(',', '.')
+    	conv_doll_euros = float(resultat)
+    except:
+	conv_doll_euros = 0.95
+	print('conversion à 0.95 inséré en dur')
+    browser.close()
     browser.quit()
     return(conv_doll_euros)
     
