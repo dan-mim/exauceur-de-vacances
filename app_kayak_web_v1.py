@@ -305,7 +305,6 @@ def send_mail(recipient_email, departure_date, arrival_date, path, name_result):
     dates1 = f"{departure_date} to {arrival_date}"
     email_address = "projets.dan@gmail.com"
     password = "etgixigjnxvolwdk"
-    recipient_email = "dan15.will@gmail.com"
     
     # Creating the email body
     message = template.format(dates=dates1)
